@@ -1,6 +1,11 @@
 import "~/styles/globals.css";
 
+import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
+import { redirect } from "next/navigation";
+import { Footer } from "~/components/footer";
+import { Header } from "~/components/header";
+import { authOptions } from "~/server/auth";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -13,14 +18,22 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/api/auth/signin");
+  }
   return (
-    <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>{children}</body>
+    <html lang="en" className="h-full">
+      <body className={`font-sans ${inter.variable} dark flex h-full flex-col`}>
+        <Header />
+        <main className="flex-grow border">{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }
