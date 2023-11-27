@@ -5,8 +5,8 @@ import { Inter } from "next/font/google";
 import { redirect } from "next/navigation";
 import { Footer } from "~/components/footer";
 import { Header } from "~/components/header";
+import { Toaster } from "~/components/ui/toaster";
 import { authOptions } from "~/server/auth";
-
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -32,6 +32,7 @@ export default async function RootLayout({
       <body className={`font-sans ${inter.variable} dark flex h-full flex-col`}>
         <Header />
         <main className="flex-grow border">{children}</main>
+        <Toaster />
         <Footer />
       </body>
     </html>
