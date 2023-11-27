@@ -6,6 +6,7 @@ import { EditIcon, Trash } from "lucide-react";
 import Link from "next/link";
 import { deleteTodo } from "~/actions/todo";
 import { Button, buttonVariants } from "~/components/ui/button";
+import { useToast } from "~/components/ui/use-toast";
 import { cn } from "~/utils";
 
 export const todoColumns: ColumnDef<Todo>[] = [
@@ -21,6 +22,7 @@ export const todoColumns: ColumnDef<Todo>[] = [
     accessorKey: "",
     header: "Actions",
     cell(props) {
+      const { toast } = useToast();
       return (
         <div className="flex items-center gap-6">
           <Link
@@ -34,7 +36,16 @@ export const todoColumns: ColumnDef<Todo>[] = [
             <EditIcon />
           </Link>
           <Button
-            onClick={() => deleteTodo(props.row.original.id)}
+            onClick={async () => {
+              const loading = toast({
+                title: "Deleting...",
+              });
+              await deleteTodo(props.row.original.id);
+              loading.dismiss();
+              toast({
+                title: "Successfully deleted!",
+              });
+            }}
             variant="destructive"
             size="icon"
           >
