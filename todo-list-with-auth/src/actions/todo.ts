@@ -29,6 +29,10 @@ export const addTodo = action(addTodoSchema, async ({ name }) => {
   }
 });
 
+export async function getTodos(userId: Todo["createdById"]) {
+  return await db.todo.findMany({ where: { createdById: userId } });
+}
+
 export async function deleteTodo(id: Todo["id"]) {
   await db.todo.delete({
     where: {

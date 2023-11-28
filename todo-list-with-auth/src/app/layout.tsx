@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { Footer } from "~/components/footer";
 import { Header } from "~/components/header";
 import { Toaster } from "~/components/ui/toaster";
+import Providers from "~/providers";
 import { authOptions } from "~/server/auth";
 const inter = Inter({
   subsets: ["latin"],
@@ -30,10 +31,12 @@ export default async function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className={`font-sans ${inter.variable} dark flex h-full flex-col`}>
-        <Header />
-        <main className="flex-grow border">{children}</main>
-        <Toaster />
-        <Footer />
+        <Providers>
+          <Header />
+          <main className="flex-grow border">{children}</main>
+          <Toaster />
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
