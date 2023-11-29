@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { SignOutButton } from "./sign-out-button";
+import { ThemeToggle } from "./theme-toggle";
 
 export async function Header() {
   return (
-    <header>
+    <header className="py-3">
       <nav className="border-gray-200 px-4 py-2.5 lg:px-6">
         <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between">
-          <div className="flex items-center lg:order-2">
+          <div className="flex items-center gap-6 lg:order-2">
             <SignOutButton />
+            <ThemeToggle />
           </div>
           <div
             className="hidden w-full items-center justify-between lg:order-1 lg:flex lg:w-auto"

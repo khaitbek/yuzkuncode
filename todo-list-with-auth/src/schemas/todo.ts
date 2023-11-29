@@ -1,5 +1,9 @@
-import { z } from "zod";
+import { TodoModel } from "prisma/zod";
 
-export const addTodoSchema = z.object({
-  name: z.string().min(2, "Your task must have at least 2 characters"),
+export const NewTodoSchema = TodoModel.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  createdById: true,
+  completed: true,
 });

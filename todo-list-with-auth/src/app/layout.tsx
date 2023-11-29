@@ -29,8 +29,8 @@ export default async function RootLayout({
     redirect("/api/auth/signin");
   }
   return (
-    <html lang="en" className="h-full">
-      <body className={`font-sans ${inter.variable} dark flex h-full flex-col`}>
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <body className={`font-sans ${inter.variable} flex h-full flex-col`}>
         <Providers>
           <Header />
           <main className="flex-grow border">{children}</main>

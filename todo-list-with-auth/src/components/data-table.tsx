@@ -6,7 +6,6 @@ import {
   useReactTable,
   type ColumnDef,
 } from "@tanstack/react-table";
-import Link from "next/link";
 
 import {
   Table,
@@ -16,8 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { cn } from "~/utils";
-import { buttonVariants } from "./ui/button";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -86,16 +83,6 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <Link
-        className={cn(
-          buttonVariants({
-            className: "m-6",
-          }),
-        )}
-        href="/new-todo"
-      >
-        Add new
-      </Link>
     </>
   );
 }
