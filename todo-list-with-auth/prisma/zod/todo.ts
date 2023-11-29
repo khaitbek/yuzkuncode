@@ -1,12 +1,5 @@
-import * as z from "zod";
-import {
-  CompleteCategory,
-  CompletePriority,
-  CompleteUser,
-  RelatedCategoryModel,
-  RelatedPriorityModel,
-  RelatedUserModel,
-} from "./index";
+import * as z from "zod"
+import { CompleteUser, RelatedUserModel, CompleteCategory, RelatedCategoryModel, CompletePriority, RelatedPriorityModel } from "./index"
 
 export const TodoModel = z.object({
   id: z.number().int(),
@@ -18,12 +11,12 @@ export const TodoModel = z.object({
   completed: z.boolean(),
   priorityId: z.string(),
   categoryId: z.string(),
-});
+})
 
 export interface CompleteTodo extends z.infer<typeof TodoModel> {
-  createdBy?: CompleteUser | null;
-  category: CompleteCategory;
-  priority: CompletePriority;
+  createdBy?: CompleteUser | null
+  category: CompleteCategory
+  priority: CompletePriority
 }
 
 /**
@@ -31,10 +24,8 @@ export interface CompleteTodo extends z.infer<typeof TodoModel> {
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
-export const RelatedTodoModel: z.ZodSchema<CompleteTodo> = z.lazy(() =>
-  TodoModel.extend({
-    createdBy: RelatedUserModel.nullish(),
-    category: RelatedCategoryModel,
-    priority: RelatedPriorityModel,
-  }),
-);
+export const RelatedTodoModel: z.ZodSchema<CompleteTodo> = z.lazy(() => TodoModel.extend({
+  createdBy: RelatedUserModel.nullish(),
+  category: RelatedCategoryModel,
+  priority: RelatedPriorityModel,
+}))
