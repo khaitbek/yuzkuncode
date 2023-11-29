@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-import { CompleteTodo, RelatedTodoModel } from "./index";
+import { RelatedTodoModel, type CompleteTodo } from "./index";
 
 export const PriorityModel = z.object({
   id: z.string(),
