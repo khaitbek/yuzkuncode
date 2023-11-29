@@ -29,6 +29,7 @@ export default async function EditTodoPage({ params: { id } }: PageProps) {
         id: +id,
       },
     });
+    // redirect to homepage
     redirect("/");
   }
   if (!todo) return notFound();
