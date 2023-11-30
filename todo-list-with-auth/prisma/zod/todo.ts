@@ -1,4 +1,5 @@
 import * as z from "zod"
+import { TaskStatus } from "@prisma/client"
 import { CompleteUser, RelatedUserModel, CompleteCategory, RelatedCategoryModel, CompletePriority, RelatedPriorityModel } from "./index"
 
 export const TodoModel = z.object({
@@ -11,6 +12,8 @@ export const TodoModel = z.object({
   completed: z.boolean(),
   priorityId: z.string(),
   categoryId: z.string(),
+  status: z.nativeEnum(TaskStatus),
+  dueDate: z.date().nullish(),
 })
 
 export interface CompleteTodo extends z.infer<typeof TodoModel> {

@@ -6,4 +6,5 @@ export const NewTodoSchema = TodoModel.omit({
   updatedAt: true,
   createdById: true,
   completed: true,
+  status: true,
 });

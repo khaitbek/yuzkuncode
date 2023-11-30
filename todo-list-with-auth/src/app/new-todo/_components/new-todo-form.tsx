@@ -59,8 +59,6 @@ export function NewTodoForm() {
       });
     },
   });
-  // ...
-
   // 2. Define a submit handler.
   async function onSubmit(values: FormFields) {
     await mutateAsync(values);
