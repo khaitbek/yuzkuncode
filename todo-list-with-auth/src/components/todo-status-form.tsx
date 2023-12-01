@@ -71,7 +71,7 @@ export function TodoStatusForm({
                 <SelectContent>
                   {/* eslint-disable-next-line @typescript-eslint/no-unsafe-argument */}
                   {Object.values(TaskStatus).map((status) => (
-                    <SelectItem value={status}>
+                    <SelectItem key={status} value={status}>
                       {taskStatusKeys[status]}
                     </SelectItem>
                   ))}

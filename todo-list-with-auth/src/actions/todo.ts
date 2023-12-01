@@ -51,7 +51,7 @@ export const changeTodoStatus = action(
           status: status as unknown as never,
         },
       });
-      revalidatePath("/");
+      // revalidatePath("/");
     } catch (error) {}
   },
 );

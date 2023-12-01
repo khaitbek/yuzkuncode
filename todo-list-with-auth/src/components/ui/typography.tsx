@@ -34,3 +34,16 @@ export function TypographyH2({ className, ...props }: ComponentProps<"h2">) {
     </h2>
   );
 }
+
+export function TypographyH3({ className, ...props }: ComponentProps<"h3">) {
+  return (
+    <h3
+      className={cn(
+        "scroll-m-20 text-2xl font-semibold tracking-tight",
+        className,
+      )}
+    >
+      {props.children}
+    </h3>
+  );
+}
