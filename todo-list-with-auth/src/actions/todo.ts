@@ -36,6 +36,37 @@ export const addTodo = action(
   },
 );
 
+export const editTodo = action(
+  NewTodoSchema.extend({
+    id: z.number().int(),
+  }),
+  async ({ name, priorityId, description, categoryId, id }) => {
+    try {
+      const session = await getServerSession(authOptions);
+      await db.todo.update({
+        where: {
+          id,
+        },
+        data: {
+          name,
+          createdById: session?.user.id,
+          priorityId: priorityId,
+          categoryId: categoryId,
+          description,
+          status: "TO_DO",
+        },
+      });
+      return {
+        message: "Successfully updated",
+      };
+    } catch (error) {
+      return {
+        message: "Error happened while updating",
+      };
+    }
+  },
+);
+
 export const changeTodoStatus = action(
   z.object({
     status: z.string(),
@@ -57,7 +88,13 @@ export const changeTodoStatus = action(
 );
 
 export async function getTodos(userId: Todo["createdById"]) {
-  return await db.todo.findMany({ where: { createdById: userId } });
+  return await db.todo.findMany({
+    where: { createdById: userId },
+    include: {
+      category: true,
+      priority: true,
+    },
+  });
 }
 
 export async function deleteTodo(id: Todo["id"]) {
@@ -72,4 +109,21 @@ export async function deleteTodo(id: Todo["id"]) {
 export async function clearTodos() {
   await db.todo.deleteMany();
   revalidatePath("/");
+}
+
+export async function getTableCategoryAndPriority() {
+  const categories = await db.category.findMany({});
+  const priorities = await db.priority.findMany({});
+  return {
+    categories: categories.map((c) => ({
+      value: c.id,
+      label: c.name,
+      icon: undefined,
+    })),
+    priorities: priorities.map((p) => ({
+      value: p.name,
+      label: p.name,
+      icon: undefined,
+    })),
+  };
 }

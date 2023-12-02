@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
-import { TaskStatus, type Todo } from "@prisma/client";
+import { TaskStatus } from "@prisma/client";
 import { type ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Trash } from "lucide-react";
+import { ArrowUpDown, EditIcon, MoreHorizontal, Trash } from "lucide-react";
+import Link from "next/link";
+import { CompleteTodo } from "prisma/zod";
 import { deleteTodo } from "~/actions/todo";
 import TodoStatusDialog from "~/components/todo-status-dialog";
-import { Button } from "~/components/ui/button";
+import { Badge, BadgeProps } from "~/components/ui/badge";
+import { Button, buttonVariants } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { useToast } from "~/components/ui/use-toast";
+import { cn } from "~/utils";
 
 export const taskStatusEnum = {
   ...TaskStatus,
@@ -30,38 +34,87 @@ export const taskStatusKeys: {
   TO_DO: "To do",
 } as const;
 
-export const todoColumns: ColumnDef<Todo>[] = [
+export const todoColumns: ColumnDef<CompleteTodo>[] = [
   {
     accessorKey: "id",
-    // header({ column }) {
-    //   <Button
-    //     variant="ghost"
-    //     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-    //   >
-    //     ID
-    //     <ArrowUpDown className="ml-2 h-4 w-4" />
-    //   </Button>;
-    // },
     header: "ID",
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Title
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell(props) {
+      return (
+        <div className="flex items-center gap-6">
+          <Badge>{props.row.original.category.name}</Badge>
+          <span>{props.row.original.name}</span>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "status",
     header: "Status",
     cell(props) {
+      const variant: {
+        [x in Status]: BadgeProps["variant"];
+      } = {
+        TO_DO: "default",
+        IN_PROGRESS: "info",
+        COMPLETED: "outline",
+        CANCELLED: "secondary",
+        LATE: "destructive",
+      };
+      // const variant = badgeVariants({
+      //   variant:""
+      // })
       const neededKeyString =
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         taskStatusKeys[props.row.original.status];
       return (
         <TodoStatusDialog
           id={props.row.original.id}
-          triggerLabel={neededKeyString}
+          triggerLabel={
+            <div className="flex items-center gap-3">
+              <Badge variant={variant[props.row.original.status]}>
+                {neededKeyString}
+              </Badge>
+            </div>
+          }
           currentStatus={neededKeyString}
         />
       );
+    },
+    filterFn: (row, id, value) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: "priorityId",
+    header: "Priority",
+    cell(props) {
+      return (
+        <Badge variant="outline">{props.row.original.priority.name}</Badge>
+      );
+    },
+    filterFn: (row, id, value) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      console.log({
+        value,
+        rowGetValue: row.getValue(String(row.original.priority.name)),
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      return value.includes(row.original.priority.name);
     },
   },
   {
@@ -86,7 +139,7 @@ export const todoColumns: ColumnDef<Todo>[] = [
               Copy todo
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            {/* <DropdownMenuItem>
+            <DropdownMenuItem>
               <Link
                 className={cn(
                   buttonVariants({
@@ -98,7 +151,7 @@ export const todoColumns: ColumnDef<Todo>[] = [
                 Edit
                 <EditIcon className="ml-2" size={16} />
               </Link>
-            </DropdownMenuItem> */}
+            </DropdownMenuItem>
             <DropdownMenuItem>
               <Button
                 onClick={async () => {

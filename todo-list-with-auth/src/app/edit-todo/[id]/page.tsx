@@ -1,11 +1,9 @@
 import { type Todo } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
-import { Checkbox } from "~/components/ui/checkbox";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
+import { PageSection } from "~/components/page-section";
+import { TodoForm } from "~/components/todo-form";
 import { TypographyH2 } from "~/components/ui/typography";
 import { db } from "~/server/db";
-import { NewTodoSubmitButton } from "../submit-button";
 
 interface PageProps {
   params: {
@@ -34,34 +32,9 @@ export default async function EditTodoPage({ params: { id } }: PageProps) {
   }
   if (!todo) return notFound();
   return (
-    <form className="flex h-full items-center justify-center" action={editTodo}>
-      <div className="container mx-auto grid max-w-[650px] gap-6 p-6">
-        <TypographyH2>Edit todo with the id of {id}</TypographyH2>
-        <Label htmlFor="name">Title</Label>
-        <Input
-          defaultValue={todo?.name}
-          id="name"
-          type="text"
-          name="name"
-          placeholder="Name of your todo..."
-          required
-        />
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            defaultChecked={todo.completed}
-            id="terms"
-            name="completed"
-          />
-          <label
-            htmlFor="terms"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Completed
-          </label>
-        </div>
-        <NewTodoSubmitButton />
-      </div>
-    </form>
+    <PageSection>
+      <TypographyH2 className="mb-6 text-center">Edit todo</TypographyH2>
+      <TodoForm mode="edit" data={todo} />
+    </PageSection>
   );
 }

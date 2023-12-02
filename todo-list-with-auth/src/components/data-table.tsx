@@ -3,17 +3,20 @@
 import {
   flexRender,
   getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
+  type VisibilityState,
 } from "@tanstack/react-table";
 import React from "react";
 
-import { TaskStatus } from "@prisma/client";
-import { taskStatusKeys } from "~/columns/todos";
+import { useQuery } from "@tanstack/react-query";
+import { getTableCategoryAndPriority } from "~/actions/todo";
 import {
   Table,
   TableBody,
@@ -22,8 +25,10 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import { statuses } from "~/data/status";
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
+import DataTableViewToggle from "./data-table-view-toggle";
 import { Input } from "./ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -34,27 +39,41 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const { data: tableInfo } = useQuery({
+    queryKey: ["table", "info"],
+    queryFn: async () => getTableCategoryAndPriority(),
+  });
+  const [rowSelection, setRowSelection] = React.useState({});
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const table = useReactTable({
     data,
     columns,
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       sorting,
       columnFilters,
+      columnVisibility,
+      rowSelection,
     },
   });
   return (
     <>
       <div className="rounded-md border">
-        <div className="flex flex-col items-center gap-4 p-4 md:flex-row">
+        <div className="flex flex-col gap-4 p-4 md:flex-row">
           <Input
             placeholder="Search todos..."
             value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -63,27 +82,21 @@ export function DataTable<TData, TValue>({
             }
             className="max-w-sm"
           />
-          <Select
-            value={
-              (table.getColumn("status")?.getFilterValue() as string) ?? ""
-            }
-            onValueChange={(value) => {
-              const filterValue = value === "all" ? "" : value;
-              table.getColumn("status")?.setFilterValue(filterValue);
-            }}
-          >
-            <SelectTrigger>Filter by status</SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              {/* eslint-disable-next-line @typescript-eslint/no-unsafe-argument  */}
-              {Object.keys(TaskStatus).map((key) => (
-                <SelectItem value={key}>
-                  {/* @ts-expect-error will be fixed later */}
-                  {taskStatusKeys[key]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {table.getColumn("status") && (
+            <DataTableFacetedFilter
+              column={table.getColumn("status")}
+              title="Status"
+              options={statuses}
+            />
+          )}
+          {table.getColumn("priorityId") && (
+            <DataTableFacetedFilter
+              column={table.getColumn("priorityId")}
+              title="Priority"
+              options={tableInfo?.priorities ?? []}
+            />
+          )}
+          <DataTableViewToggle table={table} />
         </div>
         <Table>
           <TableHeader className="top sticky">

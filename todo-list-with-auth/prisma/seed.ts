@@ -1,36 +1,37 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 async function main() {
-  const categories = await prisma.category.createMany({
-    data: [
-      {
-        name: "Work",
-      },
-      {
-        name: "Personal",
-      },
-    ],
-  });
-  const priorities = await prisma.priority.createMany({
-    data: [
-      {
-        name: "Do",
-      },
-      {
-        name: "Defer",
-      },
-      {
-        name: "Delegate",
-      },
-      {
-        name: "Delete",
-      },
-    ],
-  });
-  console.log({
-    categories,
-    priorities,
-  });
+  // const categories = await prisma.category.createMany({
+  //   data: [
+  //     {
+  //       name: "Work",
+  //     },
+  //     {
+  //       name: "Personal",
+  //     },
+  //   ],
+  // });
+  // const priorities = await prisma.priority.createMany({
+  //   data: [
+  //     {
+  //       name: "Do",
+  //     },
+  //     {
+  //       name: "Defer",
+  //     },
+  //     {
+  //       name: "Delegate",
+  //     },
+  //     {
+  //       name: "Delete",
+  //     },
+  //   ],
+  // });
+  // console.log({
+  //   categories,
+  //   priorities,
+  // });
+  // const priorities = await prisma
 }
 main()
   .then(async () => {

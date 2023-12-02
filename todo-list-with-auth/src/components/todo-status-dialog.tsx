@@ -1,6 +1,6 @@
 "use client";
 import { type Todo } from "@prisma/client";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import {
 import { TodoStatusForm } from "./todo-status-form";
 
 interface TodoStatusDialogProps {
-  triggerLabel: string;
+  triggerLabel: ReactNode;
   id: Todo["id"];
   currentStatus?: string;
 }
@@ -24,21 +24,28 @@ export default function TodoStatusDialog({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const closeDialog = () => setIsOpen(false);
   return (
-    <Dialog open={isOpen} modal>
+    <Dialog
+      onOpenChange={(val) => {
+        setIsOpen(val);
+        console.log({ val });
+      }}
+      open={isOpen}
+      modal
+    >
       <DialogTrigger onClick={() => setIsOpen(true)}>
         {triggerLabel}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="mb-6">Change status</DialogTitle>
-          <TodoStatusForm
-            postSubmit={closeDialog}
-            todoId={id}
-            triggerProps={{
-              placeholder: currentStatus,
-            }}
-          />
         </DialogHeader>
+        <TodoStatusForm
+          postSubmit={closeDialog}
+          todoId={id}
+          triggerProps={{
+            placeholder: currentStatus,
+          }}
+        />
         {/* <DialogFooter className="sm:justify-start">
           <DialogClose asChild>
             <Button type="button">Close</Button>
