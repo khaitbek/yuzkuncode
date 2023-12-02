@@ -91,8 +91,18 @@ export async function getTodos(userId: Todo["createdById"]) {
   return await db.todo.findMany({
     where: { createdById: userId },
     include: {
-      category: true,
-      priority: true,
+      category: {
+        include: {
+          todos: true,
+          _count: true,
+        },
+      },
+      priority: {
+        include: {
+          todos: true,
+          _count: true,
+        },
+      },
     },
   });
 }

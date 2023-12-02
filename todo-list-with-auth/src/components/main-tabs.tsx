@@ -1,6 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { CompleteTodo } from "prisma/zod";
 import { getTodos } from "~/actions/todo";
 import { todoColumns } from "~/columns/todos";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -20,7 +21,10 @@ export function MainTabs() {
         <TabsTrigger value="board">Board view</TabsTrigger>
       </TabsList>
       <TabsContent value="table">
-        <DataTable data={todos ?? []} columns={todoColumns} />
+        <DataTable
+          data={(todos as unknown as CompleteTodo[]) ?? []}
+          columns={todoColumns}
+        />
       </TabsContent>
       <TabsContent className="py-6" value="board">
         <BoardView />
