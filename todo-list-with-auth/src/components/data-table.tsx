@@ -16,7 +16,8 @@ import {
 import React from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import { getTableCategoryAndPriority } from "~/actions/todo";
+import Link from "next/link";
+import { clearTodos, getTableCategoryAndPriority } from "~/actions/todo";
 import {
   Table,
   TableBody,
@@ -26,8 +27,11 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { statuses } from "~/data/status";
+import { cn } from "~/utils";
+import ClearTasksButton from "./clear-tasks-form";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import DataTableViewToggle from "./data-table-view-toggle";
+import { buttonVariants } from "./ui/button";
 import { Input } from "./ui/input";
 
 interface DataTableProps<TData, TValue> {
@@ -96,6 +100,17 @@ export function DataTable<TData, TValue>({
               options={tableInfo?.priorities ?? []}
             />
           )}
+          <div className="flex gap-2">
+            <Link
+              className={cn(buttonVariants({ className: "mb-6" }))}
+              href="/new-todo"
+            >
+              Add new
+            </Link>
+            <form action={clearTodos}>
+              <ClearTasksButton />
+            </form>
+          </div>
           <DataTableViewToggle table={table} />
         </div>
         <Table>

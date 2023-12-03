@@ -1,13 +1,9 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { getServerSession } from "next-auth";
-import Link from "next/link";
-import { clearTodos, getTodos } from "~/actions/todo";
-import { default as ClearTasksButton } from "~/components/clear-tasks-form";
+import { getTodos } from "~/actions/todo";
 import { MainTabs } from "~/components/main-tabs";
-import { buttonVariants } from "~/components/ui/button";
 import { TypographyH1 } from "~/components/ui/typography";
 import { authOptions } from "~/server/auth";
-import { cn } from "~/utils";
 import getQueryClient from "~/utils/get-rq-client";
 
 export default async function HomePage() {
@@ -23,17 +19,7 @@ export default async function HomePage() {
       <section className="py-12">
         <div className="container">
           <TypographyH1 className="mb-6 text-center">Todo List</TypographyH1>
-          <div className="flex gap-2">
-            <Link
-              className={cn(buttonVariants({ className: "mb-6" }))}
-              href="/new-todo"
-            >
-              Add new
-            </Link>
-            <form action={clearTodos}>
-              <ClearTasksButton />
-            </form>
-          </div>
+
           <HydrationBoundary state={dehydratedState}>
             <MainTabs />
             {/* <DataTable data={todos ?? []} columns={todoColumns} /> */}
