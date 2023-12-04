@@ -1,37 +1,27 @@
-"use client";
-import { useQuery } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
-import { type CompleteTodo } from "prisma/zod";
-import { getTodos } from "~/actions/todo";
-import { todoColumns } from "~/columns/todos";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 // import { BoardView } from "./board-view";
 // import { Dashboard } from "./dashboard";
-import dynamic from "next/dynamic";
+import { getServerSession } from "next-auth";
+import { notFound } from "next/navigation";
+import { CompleteTodo } from "prisma/zod";
+import { getTodos } from "~/actions/todo";
+import { todoColumns } from "~/columns/todos";
+import { authOptions } from "~/server/auth";
+import getQueryClient from "~/utils/get-rq-client";
+import { BoardView } from "./board-view";
+import { Dashboard } from "./dashboard";
 import { DataTable } from "./data-table";
 
-const BoardView = dynamic(
-  () => import("./board-view").then((module) => module.BoardView),
-  {
-    loading: () => <p>Loading...</p>,
-  },
-);
-
-const Dashboard = dynamic(
-  () => import("./dashboard").then((module) => module.Dashboard),
-  {
-    loading: () => <p>Loading...</p>,
-  },
-);
-
-export function MainTabs() {
-  const session = useSession();
-  const { data: todos, isLoading } = useQuery({
+export async function MainTabs() {
+  const session = await getServerSession(authOptions);
+  if (!session) notFound();
+  const queryClient = getQueryClient();
+  const todos = await queryClient.ensureQueryData({
     queryKey: ["todos"],
-    queryFn: async () => await getTodos(session.data!.user.id),
+    queryFn: async () => await getTodos(session.user.id),
   });
   return (
-    <Tabs className="p-0" defaultValue="dashboard">
+    <Tabs className="p-0" defaultValue="tasks">
       <TabsList className="flex h-max max-w-max bg-transparent p-0">
         <TabsTrigger value="tasks">Tasks</TabsTrigger>
         <TabsTrigger value="dashboard">Dashboard</TabsTrigger>

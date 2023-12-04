@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { changeTodoStatus } from "~/actions/todo";
-import { taskStatusKeys } from "~/columns/todos";
+import { taskStatusKeys } from "~/data/status";
 import { Button } from "./ui/button";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import {

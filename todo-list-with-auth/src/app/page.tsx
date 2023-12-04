@@ -22,7 +22,6 @@ export default async function HomePage() {
 
           <HydrationBoundary state={dehydratedState}>
             <MainTabs />
-            {/* <DataTable data={todos ?? []} columns={todoColumns} /> */}
           </HydrationBoundary>
         </div>
       </section>

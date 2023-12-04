@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
-import { TaskStatus } from "@prisma/client";
 import { type ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, EditIcon, MoreHorizontal, Trash } from "lucide-react";
 import Link from "next/link";
-import { CompleteTodo } from "prisma/zod";
+import { type CompleteTodo } from "prisma/zod";
 import { deleteTodo } from "~/actions/todo";
 import TodoStatusDialog from "~/components/todo-status-dialog";
-import { Badge, BadgeProps } from "~/components/ui/badge";
+import { Badge, type BadgeProps } from "~/components/ui/badge";
 import { Button, buttonVariants } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -18,21 +17,8 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { useToast } from "~/components/ui/use-toast";
+import { Status, taskStatusKeys } from "~/data/status";
 import { cn } from "~/utils";
-
-export const taskStatusEnum = {
-  ...TaskStatus,
-} as const;
-export type Status = keyof typeof taskStatusEnum;
-export const taskStatusKeys: {
-  [s in Status]: string;
-} = {
-  CANCELLED: "Cancelled",
-  COMPLETED: "Completed",
-  IN_PROGRESS: "In progress",
-  LATE: "Late",
-  TO_DO: "To do",
-} as const;
 
 export const todoColumns: ColumnDef<CompleteTodo>[] = [
   {

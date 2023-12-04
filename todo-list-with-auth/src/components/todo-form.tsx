@@ -6,8 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type * as z from "zod";
 
-import { Todo } from "@prisma/client";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { type ComponentProps } from "react";
 import { addTodo, editTodo } from "~/actions/todo";
@@ -30,7 +29,6 @@ import {
 } from "~/components/ui/select";
 import { useToast } from "~/components/ui/use-toast";
 import { NewTodoSchema } from "~/schemas/todo";
-import { getFormInfo } from "~/utils/api";
 import getQueryClient from "~/utils/get-rq-client";
 
 type FormFields = z.infer<typeof NewTodoSchema>;
@@ -38,14 +36,26 @@ type FormFields = z.infer<typeof NewTodoSchema>;
 // interface TodoFormProps {
 //   mode?: "insert" | "edit";
 // }
-type TodoFormProps =
+type TodoFormProps = {
+  formInfo: {
+    categories: {
+      id: string;
+      name: string;
+    }[];
+    priorities: {
+      id: string;
+      name: string;
+    }[];
+  };
+} & (
   | {
       mode: "insert";
     }
   | {
       mode: "edit";
-      data: Partial<Todo>;
-    };
+      data: FormFields;
+    }
+);
 export function TodoForm(props: TodoFormProps) {
   const { id } = useParams();
   const actions = {
@@ -63,10 +73,6 @@ export function TodoForm(props: TodoFormProps) {
             ...props.data,
           },
   });
-  const { data } = useQuery({
-    queryKey: ["form"],
-    queryFn: async () => await getFormInfo(),
-  });
   const { toast } = useToast();
   const { mutateAsync, isPending } = useMutation({
     mutationKey: ["tasks", "new"],
@@ -77,7 +83,7 @@ export function TodoForm(props: TodoFormProps) {
       });
     },
     async onSuccess() {
-      await queryClient.invalidateQueries({ queryKey: ["todos"] });
+      // await queryClient.invalidateQueries({ queryKey: ["todos"] });
       router.push("/");
     },
     onError() {
@@ -91,8 +97,7 @@ export function TodoForm(props: TodoFormProps) {
   async function onSubmit(values: FormFields) {
     await mutateAsync(values);
   }
-  if (!data) return null;
-  const { categories, priorities } = data;
+  const { categories, priorities } = props.formInfo;
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

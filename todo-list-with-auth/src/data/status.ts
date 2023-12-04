@@ -1,3 +1,4 @@
+import { TaskStatus } from "@prisma/client";
 import {
   CheckCircle,
   Circle,
@@ -6,7 +7,6 @@ import {
   XCircle,
   type LucideIcon,
 } from "lucide-react";
-import { type Status } from "~/columns/todos";
 
 interface TableStatus {
   value: Status;
@@ -41,3 +41,17 @@ export const statuses: TableStatus[] = [
     icon: MinusCircle,
   },
 ];
+
+export const taskStatusEnum = {
+  ...TaskStatus,
+} as const;
+export type Status = keyof typeof taskStatusEnum;
+export const taskStatusKeys: {
+  [s in Status]: string;
+} = {
+  CANCELLED: "Cancelled",
+  COMPLETED: "Completed",
+  IN_PROGRESS: "In progress",
+  LATE: "Late",
+  TO_DO: "To do",
+} as const;

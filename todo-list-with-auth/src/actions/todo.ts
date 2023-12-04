@@ -25,6 +25,7 @@ export const addTodo = action(
           status: "TO_DO",
         },
       });
+      revalidatePath("/");
       return {
         message: "Successfully added",
       };
@@ -56,6 +57,7 @@ export const editTodo = action(
           status: "TO_DO",
         },
       });
+      revalidatePath("/");
       return {
         message: "Successfully updated",
       };
@@ -82,7 +84,7 @@ export const changeTodoStatus = action(
           status: status as unknown as never,
         },
       });
-      // revalidatePath("/");
+      revalidatePath("/");
     } catch (error) {}
   },
 );
@@ -106,6 +108,9 @@ export async function getTodos(userId: Todo["createdById"]) {
     },
   });
 }
+
+// 100 -> 70 completed
+// 100 -> 100 / 100 => 1 * (completed.length)
 
 export async function deleteTodo(id: Todo["id"]) {
   await db.todo.delete({

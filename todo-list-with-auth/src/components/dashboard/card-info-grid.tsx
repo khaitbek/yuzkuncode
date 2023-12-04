@@ -1,11 +1,21 @@
+// "use client";
 import { type ComponentProps } from "react";
 import { cn } from "~/utils";
+import { getInfo } from "~/utils/api";
 import { Paragraph, TypographyH3 } from "../ui/typography";
 
 export default async function CardInfoGrid({
   className,
   ...props
 }: ComponentProps<"ul">) {
+  console.log("CardInfoGrid message");
+  const {
+    tasksToDo,
+    cancelledTasksPercent,
+    completedTasksPercent,
+    count,
+    inProgressTasksPercent,
+  } = await getInfo();
   return (
     <ul
       className={cn(
@@ -13,9 +23,11 @@ export default async function CardInfoGrid({
         className,
       )}
     >
-      <CardInfoItem label="Tasks" value="100" />
-      <CardInfoItem label="Completed" value="40%" />
-      <CardInfoItem label="In progress" value="60%" />
+      <CardInfoItem label="Tasks" value={String(count)} />
+      <CardInfoItem label="To do" value={tasksToDo} />
+      <CardInfoItem label="In progress" value={inProgressTasksPercent} />
+      <CardInfoItem label="Completed" value={completedTasksPercent} />
+      <CardInfoItem label="Cancelled" value={cancelledTasksPercent} />
     </ul>
   );
 }
