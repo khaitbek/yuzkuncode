@@ -84,7 +84,7 @@ export function TodoForm(props: TodoFormProps) {
     },
     async onSuccess() {
       // await queryClient.invalidateQueries({ queryKey: ["todos"] });
-      router.push("/");
+      router.back();
     },
     onError() {
       toast({

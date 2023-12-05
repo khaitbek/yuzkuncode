@@ -8,7 +8,6 @@ export default async function CardInfoGrid({
   className,
   ...props
 }: ComponentProps<"ul">) {
-  console.log("CardInfoGrid message");
   const {
     tasksToDo,
     cancelledTasksPercent,

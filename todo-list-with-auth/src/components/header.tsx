@@ -22,7 +22,7 @@ export async function Header() {
                   className="block rounded py-2 pl-3 pr-4 hover:underline lg:p-0"
                   aria-current="page"
                 >
-                  Tasks
+                  Home
                 </Link>
               </li>
             </ul>

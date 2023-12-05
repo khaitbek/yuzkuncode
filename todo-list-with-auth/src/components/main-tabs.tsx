@@ -1,11 +1,9 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-// import { BoardView } from "./board-view";
-// import { Dashboard } from "./dashboard";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
-import { CompleteTodo } from "prisma/zod";
+import { type CompleteTodo } from "prisma/zod";
 import { getTodos } from "~/actions/todo";
 import { todoColumns } from "~/columns/todos";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { authOptions } from "~/server/auth";
 import getQueryClient from "~/utils/get-rq-client";
 import { BoardView } from "./board-view";
