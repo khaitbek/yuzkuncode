@@ -1,13 +1,16 @@
 import "~/styles/globals.css";
 
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
 import { redirect } from "next/navigation";
+import { getTodos } from "~/actions/todo";
 import { Footer } from "~/components/footer";
 import { Header } from "~/components/header";
 import { Toaster } from "~/components/ui/toaster";
 import Providers from "~/providers";
 import { authOptions } from "~/server/auth";
+import getQueryClient from "~/utils/get-rq-client";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -30,13 +33,22 @@ export default async function RootLayout({
   if (!session) {
     redirect("/api/auth/signin");
   }
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["todos"],
+    queryFn: async () => await getTodos(session.user.id),
+  });
+  const dehydratedState = dehydrate(queryClient);
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
       <body className={`font-sans ${inter.variable} flex h-full flex-col`}>
         <Providers>
           <Header />
-          <main className="flex-grow border">{children}</main>
-          {modal}
+          <HydrationBoundary state={dehydratedState}>
+            <main className="flex-grow border">{children}</main>
+            {modal}
+          </HydrationBoundary>
+
           <Toaster />
           <Footer />
         </Providers>

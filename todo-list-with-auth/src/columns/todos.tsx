@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
+import { type Todo } from "@prisma/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, EditIcon, Trash } from "lucide-react";
 import Link from "next/link";
@@ -9,7 +11,7 @@ import TodoStatusDialog from "~/components/todo-status-dialog";
 import { Badge, type BadgeProps } from "~/components/ui/badge";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
-import { Status, taskStatusKeys } from "~/data/status";
+import { taskStatusKeys, type Status } from "~/data/status";
 import { cn } from "~/utils";
 
 export const todoColumns: ColumnDef<CompleteTodo>[] = [
@@ -33,7 +35,7 @@ export const todoColumns: ColumnDef<CompleteTodo>[] = [
     cell(props) {
       return (
         <div className="flex items-center gap-6">
-          <Badge>{props.row.original.category.name}</Badge>
+          <Badge>{props.row.original.category?.name}</Badge>
           <span>{props.row.original.name}</span>
         </div>
       );
@@ -99,8 +101,27 @@ export const todoColumns: ColumnDef<CompleteTodo>[] = [
     accessorKey: "",
     header: "Actions",
     cell(props) {
+      const queryClient = useQueryClient();
       const { toast } = useToast();
-      const todo = props.row.original;
+      const { mutate: deleteMutation } = useMutation({
+        mutationFn: async () => {
+          toast({
+            title: "Deleting...",
+          });
+
+          await deleteTodo(props.row.original.id);
+        },
+        onMutate: async () => {
+          await queryClient.cancelQueries({
+            queryKey: ["todos"],
+          });
+          const previousTodos = queryClient.getQueryData(["todos"]);
+          queryClient.setQueryData(["todos"], (old: Todo[]) =>
+            old.filter((todo) => todo.id !== props.row.original.id),
+          );
+          return { previousTodos };
+        },
+      });
       return (
         <div className="flex max-w-max gap-6">
           <Link
@@ -114,19 +135,7 @@ export const todoColumns: ColumnDef<CompleteTodo>[] = [
             <span className="sr-only">Edit</span>
             <EditIcon size={16} />
           </Link>
-          <Button
-            onClick={async () => {
-              const loading = toast({
-                title: "Deleting...",
-              });
-              await deleteTodo(props.row.original.id);
-              loading.dismiss();
-              toast({
-                title: "Successfully deleted!",
-              });
-            }}
-            variant="destructive"
-          >
+          <Button onClick={() => deleteMutation()} variant="destructive">
             <span className="sr-only">Delete</span>
             <Trash size={16} />
           </Button>

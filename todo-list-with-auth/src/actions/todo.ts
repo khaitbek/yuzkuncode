@@ -15,7 +15,7 @@ export const addTodo = action(
   async ({ name, priorityId, description, categoryId }) => {
     try {
       const session = await getServerSession(authOptions);
-      await db.todo.create({
+      const newTodo = await db.todo.create({
         data: {
           name,
           createdById: session?.user.id,
@@ -25,10 +25,13 @@ export const addTodo = action(
           status: "TO_DO",
         },
       });
-      revalidatePath("/");
       return {
-        message: "Successfully added",
+        todo: newTodo,
       };
+      // await getQueryClient().invalidateQueries({
+      //   queryKey: ["todos"],
+      // });
+      // redirect("/");
     } catch (error) {
       return {
         message: "Error happened",
@@ -57,10 +60,11 @@ export const editTodo = action(
           status: "TO_DO",
         },
       });
-      revalidatePath("/");
-      return {
-        message: "Successfully updated",
-      };
+      // await getQueryClient().invalidateQueries({
+      //   queryKey: ["todos"],
+      // });
+      // revalidatePath("/");
+      // redirect("/");
     } catch (error) {
       return {
         message: "Error happened while updating",
@@ -84,6 +88,9 @@ export const changeTodoStatus = action(
           status: status as unknown as never,
         },
       });
+      // await getQueryClient().invalidateQueries({
+      //   queryKey: ["todos"],
+      // });
       revalidatePath("/");
     } catch (error) {}
   },
@@ -130,12 +137,12 @@ export async function getTableCategoryAndPriority() {
   const categories = await db.category.findMany({});
   const priorities = await db.priority.findMany({});
   return {
-    categories: categories.map((c) => ({
+    categories: categories?.map((c) => ({
       value: c.id,
       label: c.name,
       icon: undefined,
     })),
-    priorities: priorities.map((p) => ({
+    priorities: priorities?.map((p) => ({
       value: p.name,
       label: p.name,
       icon: undefined,

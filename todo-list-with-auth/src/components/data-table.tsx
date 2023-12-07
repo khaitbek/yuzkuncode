@@ -16,8 +16,13 @@ import {
 import React from "react";
 
 import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { clearTodos, getTableCategoryAndPriority } from "~/actions/todo";
+import {
+  clearTodos,
+  getTableCategoryAndPriority,
+  getTodos,
+} from "~/actions/todo";
 import {
   Table,
   TableBody,
@@ -36,13 +41,16 @@ import { Input } from "./ui/input";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
 }: DataTableProps<TData, TValue>) {
+  const { data: sessionData } = useSession();
+  const { data: todos } = useQuery({
+    queryKey: ["todos"],
+    queryFn: async () => getTodos(sessionData!.user.id),
+  });
   const { data: tableInfo } = useQuery({
     queryKey: ["table", "info"],
     queryFn: async () => getTableCategoryAndPriority(),
@@ -55,7 +63,7 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const table = useReactTable({
-    data,
+    data: todos as unknown as TData[],
     columns,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,

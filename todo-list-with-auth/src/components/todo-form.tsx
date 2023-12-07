@@ -6,8 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type * as z from "zod";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
+import { CompleteTodo } from "prisma/zod";
 import { type ComponentProps } from "react";
 import { addTodo, editTodo } from "~/actions/todo";
 import { Button } from "~/components/ui/button";
@@ -29,7 +30,6 @@ import {
 } from "~/components/ui/select";
 import { useToast } from "~/components/ui/use-toast";
 import { NewTodoSchema } from "~/schemas/todo";
-import getQueryClient from "~/utils/get-rq-client";
 
 type FormFields = z.infer<typeof NewTodoSchema>;
 
@@ -62,7 +62,7 @@ export function TodoForm(props: TodoFormProps) {
     edit: editTodo,
     insert: addTodo,
   };
-  const queryClient = getQueryClient();
+  const queryClient = useQueryClient();
   const router = useRouter();
   const form = useForm<FormFields>({
     resolver: zodResolver(NewTodoSchema),
@@ -77,13 +77,35 @@ export function TodoForm(props: TodoFormProps) {
   const { mutateAsync, isPending } = useMutation({
     mutationKey: ["tasks", "new"],
     mutationFn: async (data: FormFields) => {
-      await actions[props.mode]({
+      return await actions[props.mode]({
         ...data,
         id: Number(id),
       });
     },
-    async onSuccess() {
-      // await queryClient.invalidateQueries({ queryKey: ["todos"] });
+    async onSuccess(data, variables) {
+      toast({
+        title: "Successfully done!",
+        description: "Updates might take some seconds!",
+      });
+      if (props.mode === "insert") {
+        queryClient.setQueryData(["todos"], (old: CompleteTodo[]) => [
+          ...old,
+          {
+            ...variables,
+            category: props.formInfo.categories.find(
+              (c) => c.id === variables.categoryId,
+            ),
+            priority: props.formInfo.priorities.find(
+              (c) => c.id === variables.priorityId,
+            ),
+            status: "TO_DO",
+            completed: false,
+          } as CompleteTodo,
+        ]);
+      }
+      await queryClient.invalidateQueries({
+        queryKey: ["todos"],
+      });
       router.back();
     },
     onError() {
@@ -174,7 +196,7 @@ export function TodoForm(props: TodoFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {categories.map((category) => (
+                    {categories?.map((category) => (
                       <SelectItem value={String(category.id)}>
                         {category.name}
                       </SelectItem>

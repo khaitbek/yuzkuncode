@@ -1,6 +1,5 @@
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
-import { type CompleteTodo } from "prisma/zod";
 import { getTodos } from "~/actions/todo";
 import { todoColumns } from "~/columns/todos";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -14,7 +13,7 @@ export async function MainTabs() {
   const session = await getServerSession(authOptions);
   if (!session) notFound();
   const queryClient = getQueryClient();
-  const todos = await queryClient.ensureQueryData({
+  await queryClient.prefetchQuery({
     queryKey: ["todos"],
     queryFn: async () => await getTodos(session.user.id),
   });
@@ -26,10 +25,7 @@ export async function MainTabs() {
         <TabsTrigger value="board">Kanban board</TabsTrigger>
       </TabsList>
       <TabsContent value="tasks">
-        <DataTable
-          data={(todos as unknown as CompleteTodo[]) ?? []}
-          columns={todoColumns}
-        />
+        <DataTable columns={todoColumns} />
       </TabsContent>
       <TabsContent className="py-6" value="board">
         <BoardView />

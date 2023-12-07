@@ -141,7 +141,7 @@ export function NewTodoForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {categories.map((category) => (
+                    {categories?.map((category) => (
                       <SelectItem value={String(category.id)}>
                         {category.name}
                       </SelectItem>
