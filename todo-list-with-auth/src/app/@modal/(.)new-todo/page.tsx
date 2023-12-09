@@ -1,8 +1,8 @@
+import { getFormInfo } from "~/actions/todo";
 import { Modal } from "~/components/modal";
 import { TodoForm } from "~/components/todo-form";
 import { DialogContent } from "~/components/ui/dialog";
 import { TypographyH2 } from "~/components/ui/typography";
-import { getFormInfo } from "~/utils/api";
 export default async function NewTodoModal() {
   const data = await getFormInfo();
 

@@ -2,9 +2,8 @@
 
 import { type Todo } from "@prisma/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { changeTodoStatus } from "~/actions/todo";
+import { changeTodoStatus, getTasksByStatus } from "~/actions/todo";
 import { useTaskStore } from "~/store/task-board";
-import { getTasksByStatus } from "~/utils/api";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 import { TypographyH3 } from "./ui/typography";
@@ -19,7 +18,7 @@ export function KanbanBoard({ status, statusKey }: KanbanBoardProps) {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { draggedTask, dragTask, draggedStatus } = useTaskStore();
   const queryClient = useQueryClient();
-  const { data: tasks, isLoading } = useQuery({
+  const { data: tasks } = useQuery({
     queryKey: ["board", status],
     queryFn: async () => await getTasksByStatus(statusKey),
   });

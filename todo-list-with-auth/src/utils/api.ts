@@ -1,29 +1,6 @@
 "use server";
-import { type Todo } from "@prisma/client";
 import { db } from "~/server/db";
-
-export async function getFormInfo() {
-  const categories = await getCategories();
-  const priorities = await getPriorites();
-  return {
-    categories,
-    priorities,
-  };
-}
-export async function getTasksByStatus(status: Todo["status"]) {
-  return await db.todo.findMany({
-    where: {
-      status,
-    },
-  });
-}
-export async function getCategories() {
-  return await db.category.findMany();
-}
-
-export async function getPriorites() {
-  return await db.priority.findMany();
-}
+import { percentageCalculator } from "./percentage-calculator";
 
 export async function getInfo() {
   const tasks = await db.todo.findMany({});
@@ -31,18 +8,39 @@ export async function getInfo() {
   const inProgressTasks = tasks.filter((task) => task.status === "IN_PROGRESS");
   const tasksToDo = tasks.filter((task) => task.status === "TO_DO");
   const cancelledTasks = tasks.filter((task) => task.status === "CANCELLED");
+  const lateTasks = tasks.filter((task) => task.status === "LATE");
 
   return {
-    tasksToDo: `${tasksToDo.length}`,
+    tasksToDo: percentageCalculator({
+      numberOfTodos: tasks.length,
+      compareNumber: tasksToDo.length,
+    }),
     count: `${tasks.length}`,
-    completedTasksPercent: `${
-      Math.floor(tasks.length / 100) * completedTasks.length
-    }%`,
-    inProgressTasksPercent: `${
-      Math.floor(tasks.length / 100) * inProgressTasks.length
-    }%`,
-    cancelledTasksPercent: `${
-      Math.floor(tasks.length / 100) * cancelledTasks.length
-    }%`,
+    completedTasksPercent: percentageCalculator({
+      numberOfTodos: tasks.length,
+      compareNumber: completedTasks.length,
+    }),
+    inProgressTasksPercent: percentageCalculator({
+      numberOfTodos: tasks.length,
+      compareNumber: inProgressTasks.length,
+    }),
+    cancelledTasksPercent: percentageCalculator({
+      numberOfTodos: tasks.length,
+      compareNumber: cancelledTasks.length,
+    }),
+    lateTasksPercent: percentageCalculator({
+      numberOfTodos: tasks.length,
+      compareNumber: lateTasks.length,
+    }),
   };
+}
+export async function getChartInfo() {
+  const todos = await db.todo.groupBy({
+    by: ["createdAt"],
+    orderBy: {
+      createdAt: "desc",
+    },
+    _count: true,
+  });
+  return todos;
 }

@@ -1,6 +1,6 @@
+import { getFormInfo } from "~/actions/todo";
 import { TodoForm } from "~/components/todo-form";
 import { TypographyH2 } from "~/components/ui/typography";
-import { getFormInfo } from "~/utils/api";
 
 export default async function NewTodoPage() {
   // const queryClient = getQueryClient();

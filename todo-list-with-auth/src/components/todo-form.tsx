@@ -8,7 +8,7 @@ import type * as z from "zod";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import { CompleteTodo } from "prisma/zod";
+import { type CompleteTodo } from "prisma/zod";
 import { type ComponentProps } from "react";
 import { addTodo, editTodo } from "~/actions/todo";
 import { Button } from "~/components/ui/button";
