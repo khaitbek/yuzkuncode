@@ -1,10 +1,10 @@
 import { type Todo } from "@prisma/client";
 import { notFound } from "next/navigation";
+import { getFormInfo } from "~/actions/todo";
 import { PageSection } from "~/components/page-section";
 import { TodoForm } from "~/components/todo-form";
 import { TypographyH2 } from "~/components/ui/typography";
 import { db } from "~/server/db";
-import { getFormInfo } from "~/utils/api";
 
 interface PageProps {
   params: {

@@ -9,7 +9,7 @@ import type * as z from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { type ComponentProps } from "react";
-import { addTodo } from "~/actions/todo";
+import { addTodo, getFormInfo } from "~/actions/todo";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -29,7 +29,6 @@ import {
 } from "~/components/ui/select";
 import { useToast } from "~/components/ui/use-toast";
 import { NewTodoSchema } from "~/schemas/todo";
-import { getFormInfo } from "~/utils/api";
 import getQueryClient from "~/utils/get-rq-client";
 
 type FormFields = z.infer<typeof NewTodoSchema>;
